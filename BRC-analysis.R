@@ -215,10 +215,49 @@ BRC_pre1012 <- (BRCsum[-c(1),]) %>%
 BRC_post1012 <- (BRCsum[-c(1),]) %>%
   subset(Date >= "2017/10/12" & Accumulation >= 1.7) 
 #View(BRC_post1012)
+## Replace -Inf with NA
+BRC_pre1012[1:2,11:12] <- NA
 
 ## Statistical Testing 
 # Wilcoxon
-
+# median in
+wilcox.test(BRC_pre1012$medinT, alternative = "t", mu = 21, paired = FALSE, conf.int = TRUE, conf.level = 0.95)
+# max in
+wilcox.test(BRC_pre1012$maxinT, alternative = "t", mu = 21, paired = FALSE, conf.int = TRUE, conf.level = 0.95)
+# median out
+wilcox.test(BRC_pre1012$medoutT, alternative = "t", mu = 21, paired = FALSE, conf.int = TRUE, conf.level = 0.95)
+# max out
+wilcox.test(BRC_pre1012$maxoutT, alternative = "t", mu = 21, paired = FALSE, conf.int = TRUE, conf.level = 0.95)
+# median shal
+wilcox.test(BRC_pre1012$medshalT, alternative = "t", mu = 21, paired = FALSE, conf.int = TRUE, conf.level = 0.95)
+# max shal
+wilcox.test(BRC_pre1012$maxshalT, alternative = "t", mu = 21, paired = FALSE, conf.int = TRUE, conf.level = 0.95)
+# median deep
+wilcox.test(BRC_pre1012$meddeepT, alternative = "t", mu = 21, paired = FALSE, conf.int = TRUE, conf.level = 0.95)
+# max deep
+wilcox.test(BRC_pre1012$maxdeepT, alternative = "t", mu = 21, paired = FALSE, conf.int = TRUE, conf.level = 0.95)
+## Differenece between
+# median in and out
+wilcox.test(BRC_pre1012$medinT, BRC_pre1012$medoutT, alternative = "t", paired = TRUE, conf.int = TRUE, conf.level = 0.95)
+# max in and out
+wilcox.test(BRC_pre1012$maxinT, BRC_pre1012$maxoutT, alternative = "t", paired = TRUE, conf.int = TRUE, conf.level = 0.95)
+# median in and shal
+wilcox.test(BRC_pre1012$medinT, BRC_pre1012$medshalT, alternative = "t", paired = TRUE, conf.int = TRUE, conf.level = 0.95)
+# max in and shal
+wilcox.test(BRC_pre1012$maxinT, BRC_pre1012$maxshalT, alternative = "t", paired = TRUE, conf.int = TRUE, conf.level = 0.95)
+# median shal and deep
+wilcox.test(BRC_pre1012$medshalT, BRC_pre1012$meddeepT, alternative = "t", paired = TRUE, conf.int = TRUE, conf.level = 0.95)
+# max shal and deep
+wilcox.test(BRC_pre1012$maxshalT, BRC_pre1012$maxdeepT, alternative = "t", paired = TRUE, conf.int = TRUE, conf.level = 0.95)
+# median deep and out
+wilcox.test(BRC_pre1012$meddeepT, BRC_pre1012$medoutT, alternative = "t", paired = TRUE, conf.int = TRUE, conf.level = 0.95)
+# max deep and out
+wilcox.test(BRC_pre1012$maxdeepT, BRC_pre1012$maxoutT, alternative = "t", paired = TRUE, conf.int = TRUE, conf.level = 0.95)
+## post 1012 Differenece between
+# median in and out
+wilcox.test(BRC_post1012$medinT, BRC_post1012$medoutT, alternative = "t", paired = TRUE, conf.int = TRUE, conf.level = 0.95)
+# max in and out
+wilcox.test(BRC_post1012$maxinT, BRC_post1012$maxoutT, alternative = "t", paired = TRUE, conf.int = TRUE, conf.level = 0.95)
 
 
 
@@ -244,7 +283,7 @@ BRCpre1012max_box <- (BRC_pre1012) %>%
 ggplot(data = BRCpre1012med_box)+
   geom_boxplot(aes(x = variable, y = value))+
   geom_hline(aes(yintercept = 21, color = "Trout Threshold"))+
-  scale_x_discrete(labels = c( "In", "Shallow", "Deep", "Out"))+
+  scale_x_discrete(labels = c( "Inlet", "Shallow Well", "Deep Well", "Outlet"))+
   scale_y_continuous(limits = c(10,30), expand = c(0,0)) +
   labs(x = "Temperature Location", y = "Temperature (°C)")+
   theme(legend.position = "bottom", 
@@ -254,25 +293,71 @@ ggplot(data = BRCpre1012med_box)+
 ggplot(data = BRCpre1012max_box)+
   geom_boxplot(aes(x = variable, y = value))+
   geom_hline(aes(yintercept = 21, color = "Trout Threshold"))+
-  scale_x_discrete(labels = c("In", "Shallow", "Deep", "Out"))+
+  scale_x_discrete(labels = c("Inlet", "Shallow Well", "Deep Well", "Outlet"))+
+  scale_y_continuous(limits = c(10,30), expand = c(0,0)) +
+  labs(x = "Temperature Location", y = "Temperature (°C)")+
+  theme(legend.position = "bottom", 
+        legend.title = element_blank())
+
+## box plots of post-1012
+# median data
+BRCpost1012med_box <- (BRC_post1012[-c(1),]) %>%
+  select(medinT,
+         medshalT,
+         meddeepT,
+         medoutT) %>%
+  melt()
+#View(BRCpost1012med_box)
+# maximum data
+BRCpost1012max_box <- (BRC_post1012[-c(1),]) %>%
+  select(maxinT,
+         maxshalT,
+         maxdeepT,
+         maxoutT) %>%
+  melt()
+#View(BRCpost1012max_box)
+
+# plot median temps
+ggplot(data = BRCpost1012med_box)+
+  geom_boxplot(aes(x = variable, y = value))+
+  geom_hline(aes(yintercept = 21, color = "Trout Threshold"))+
+  scale_x_discrete(labels = c( "Inlet", "Shallow Well", "Deep Well", "Outlet"))+
+  scale_y_continuous(limits = c(10,30), expand = c(0,0)) +
+  labs(x = "Temperature Location", y = "Temperature (°C)")+
+  theme(legend.position = "bottom", 
+        legend.title = element_blank())
+
+# plot max temps
+ggplot(data = BRCpost1012max_box)+
+  geom_boxplot(aes(x = variable, y = value))+
+  geom_hline(aes(yintercept = 21, color = "Trout Threshold"))+
+  scale_x_discrete(labels = c("Inlet", "Shallow Well", "Deep Well", "Outlet"))+
   scale_y_continuous(limits = c(10,30), expand = c(0,0)) +
   labs(x = "Temperature Location", y = "Temperature (°C)")+
   theme(legend.position = "bottom", 
         legend.title = element_blank())
 
 # Scatter plot of all medians and maximums
-tot.scat <- (BRCsum[-c(1:5),]) %>%
+tot.scat <- (BRCsum[-c(1),]) %>%
+  select(Date,
+         Accumulation,
+         medinT,
+         maxinT,
+         medoutT,
+         maxoutT) %>%
+  subset(Accumulation >= 1.7) %>%
   select(Date,
          medinT,
          maxinT,
          medoutT,
-         maxoutT) 
+         maxoutT)
 colnames(tot.scat) <- c("Date",
-                        "Median In",
-                        "Maximum In",
-                        "Median Out",
-                        "Maximum Out")
+                        "Median Inlet",
+                        "Maximum Inlet",
+                        "Median Outlet",
+                        "Maximum Outlet")
 # View(tot.scat)
+tot.scat[1:2,4:5] <- NA
 # Melt data set
 tot.scat <- (tot.scat) %>%
   melt(id = "Date")
@@ -313,10 +398,10 @@ prob.plot <- mutate(prob.plot,
 #View(prob.plot)
 ########### Calculate probabiltiy
 prob.plot <- mutate(prob.plot, 
-                    In.med.2 = (In.med.1 - 0.375) / (6 + 1 - (2 * 0.375)),
-                    In.max.2 = (In.max.1 - 0.375) / (6 + 1 - (2 * 0.375)),
-                    Out.med.2 = (Out.med.1 - 0.375) / (6 + 1 - (2 * 0.375)),
-                    Out.max.2 = (Out.max.1 - 0.375) / (6 + 1 - (2 * 0.375)))
+                    In.med.2 = (In.med.1) / (6 + 1),
+                    In.max.2 = (In.max.1 ) / (6 + 1 ),
+                    Out.med.2 = (Out.med.1 ) / (6 + 1 ),
+                    Out.max.2 = (Out.max.1 ) / (6 + 1 ))
 #View(prob.plot)
 
 ##### Inlet + Outlet 
@@ -332,3 +417,59 @@ ggplot(data = prob.plot)+
   scale_y_continuous(limits = c(0.0,1.0), expand = c(0,0)) +
   scale_x_continuous(limits = c(10.0, 32.5), expand = c(0,0))+
   labs(x = "Temperature (°C)", y = "Probability")
+
+## 10/16 Event
+## Plot depth and rainfall
+# Plot 1
+plot10161 <- (BRC.m) %>%
+  select(date.time,
+         In.depth,
+         Shal.depth,
+         Deep.depth,
+         Out.depth) 
+colnames(plot10161) <- c("date.time",
+                        "Inlet",
+                        "Shallow Well",
+                        "Deep Well",
+                        "Outlet")
+# Plot2
+plot10162 <- (BRC.m) %>%
+  select(date.time,
+         Air.temp,
+         In.temp,
+         Shal.temp,
+         Deep.temp,
+         Out.temp) 
+colnames(plot10162) <- c("date.time",
+                        "Air",
+                        "Inlet",
+                        "Shallow Well",
+                        "Deep Well",
+                        "Outlet")
+# Prep plotting dataset1
+plot10161 <- (plot10161) %>%
+  subset(date.time >= as.POSIXct("2017-10-15 00:00:00") & date.time <= as.POSIXct("2017-10-17 00:00:00")) %>%
+  melt(id = "date.time")
+# View(plot10161)
+# Prep plotting dataset2
+plot10162 <- (plot10162) %>%
+  subset(date.time >= as.POSIXct("2017-10-15 00:00:00") & date.time <= as.POSIXct("2017-10-17 00:00:00")) %>%
+  melt(id = "date.time")
+# View(plot10162)
+# plot3
+plot3 <-ggplot(data = plot10161)+
+  geom_line(aes(x = date.time, y = value, color = variable))+
+  labs(x = "Date", y = "Depth (cm)")+
+  theme(legend.position = "bottom", 
+        legend.title = element_blank())+
+  scale_x_datetime(date_labels = "%m/%d", date_breaks = "1 days")
+# Plot4
+plot4 <-ggplot(data = plot10162)+
+  geom_line(aes(x = date.time, y = value, color = variable))+
+  labs(x = "Date", y = "Temperature (°C)")+
+  theme(legend.position = "bottom", 
+        legend.title = element_blank())+
+  scale_x_datetime(date_labels = "%m/%d", date_breaks = "1 days")
+grid.newpage()
+grid.draw(rbind(ggplotGrob(plot3), ggplotGrob(plot4), size = "last"))
+
