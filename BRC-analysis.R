@@ -473,3 +473,83 @@ plot4 <-ggplot(data = plot10162)+
 grid.newpage()
 grid.draw(rbind(ggplotGrob(plot3), ggplotGrob(plot4), size = "last"))
 
+########## Temperature Duration Plot
+### Event 6 & 7 
+## September 11-18
+##### Subset data
+evnt.9.11 <- BRC.m %>% 
+  select(date.time,
+         In.temp, 
+         Out.temp) %>%
+  subset(date.time >= as.POSIXct("2017-09-11 9:00:00") & date.time <= as.POSIXct("2017-09-18 15:00:00")) 
+#View(evnt.9.11)
+##### filter in and out data
+f.evnt.9.11 <- (evnt.9.11) %>%
+  mutate(In.temp = sort(In.temp, decreasing = TRUE, na.last = TRUE),
+         Out.temp = sort(Out.temp, decreasing = TRUE, na.last = TRUE), 
+         in.rank = rank(desc(In.temp)),
+         out.rank = rank(desc(Out.temp)),
+         In.temp = signif(In.temp, digits = 3),
+         Out.temp = signif(Out.temp, digits = 3))
+#View(f.evnt.9.11)
+### Add counter for in temps
+f.evnt.9.11 <- f.evnt.9.11 %>%
+  group_by(In.temp) %>%
+  mutate(count.in = length(In.temp))
+#View(f.evnt.9.11)
+### Add counter for out temps
+f.evnt.9.11 <- f.evnt.9.11 %>%
+  group_by(Out.temp) %>%
+  mutate(count.out = length(In.temp))
+#View(f.evnt.9.11)
+### Calculate time for in temps
+f.evnt.9.11 <- f.evnt.9.11 %>%
+  group_by(count.in) %>%
+  mutate(time.in = mean(count.in)*2/60,
+         time.in = signif(time.in, digits = 4))
+#View(f.evnt.9.11)
+### Calculation time for out temps
+f.evnt.9.11 <- f.evnt.9.11 %>%
+  group_by(count.out) %>%
+  mutate(time.out = mean(count.out)*2/60,
+         time.out = signif(time.out, digits = 4))
+#View(f.evnt.9.11)
+######## Select columns for in temperatures
+in.temp <- (f.evnt.9.11) %>%
+  ungroup() %>%
+  select("In.temp", "time.in")
+#View(in.temp)
+######## Select columns for in temperatures
+out.temp <- (f.evnt.9.11) %>%
+  ungroup() %>%
+  select("Out.temp", "time.out")
+#View(out.temp)
+##### Gather Distict observations
+in.temp <- distinct(in.temp)
+#View(in.temp)
+out.temp <- distinct(out.temp)
+#View(out.temp)
+############## Plot in
+ggplot()+
+  geom_point(data = in.temp, aes(x = time.in, y = In.temp, shape = "Inlet"))+ 
+  geom_hline(aes(yintercept = 21, color = "Trout Threshold"))+
+  geom_smooth(data = in.temp, aes(x = time.in, y = In.temp, color = "Inlet"), method = loess, se = FALSE)+ 
+  geom_point(data = out.temp, aes(x = time.out, y = Out.temp, shape = "Outlet"))+
+  geom_smooth(data = out.temp, aes(x = time.out, y = Out.temp, color = "Outlet"), method = loess, se = FALSE)+
+  scale_shape_manual(values = c(1, 16))+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(legend.position = "bottom", legend.title = element_blank())+
+  scale_y_continuous(limits = c(10,35), expand = c(0,0)) +
+  scale_x_continuous(breaks = c(0:16)) +
+  labs(x = "Duration (hrs)", y = "Temperature (°C)")
+
+
+
+
+
+
+
+
+
+
+
