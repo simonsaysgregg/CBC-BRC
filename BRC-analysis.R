@@ -30,6 +30,41 @@ require("ggmap")        # Plotting of maps same as you would with ggplot2
 require("maptools")     # Read, write, and handle Shapefiles in R
 require("mapdata")      # Supplement to maps package
 
+##Begin user defined functions###########################################
+## For flow calculation
+# Inlet1 flow calculation function
+flow.out <- function(out.depth) { 
+  # comvert depth to meters
+  out.depth <- out.depth * 0.01
+  
+  ifelse(out.depth <= 0.1143, ((796.7 * (out.depth^2.5)) / 1000), (((796.7 * (out.depth^2.5)) / 1000) + ((1.84 * 0.1905 * (out.depth^1.5)))))                      
+  # IFELSE determination of which weir calculation to use; stage in meters                                             
+  # TRUE V-notch flow
+  # FALSE V-notch + retangular w/ supressed flow
+}
+
+# Runoff estimation function
+runoff.in <- function(acc, CN, WA = 1.0378) {  # WA in acres
+  # convert accumulation to inches
+  acc.in <- acc * 3.94
+  # surface storage
+  S <- (1000/CN) - 10
+  # runoff units: inches
+  Q <- ((acc.in - (0.2 * S))^2)/(acc.in + (0.8 * S))
+  # conversion to volume: cubic feet
+  Q.vol <- Q * WA * (43560 / 12)
+  # conversion to cubic meters
+  Q.vol <- Q.vol * 0.0283
+  return(Q.vol)
+}
+
+# Thermal Load function
+therm <- function(Q, temp) {
+ 
+  
+  Q * (temp + 273.15) * 1000 * 4.18 
+
+}
 ## Read data file
 # Data file has previous manipulations
 BRC <- read.csv("./Working/CBC_BRC.DEL.csv")
@@ -69,7 +104,8 @@ BRC.m <- mutate(BRC, rainfall = (rainfall * 25.4),
                   Deep.temp = (Deep.temp - 32)/1.8, 
                   Deep.depth = (Deep.depth * 30.48),
                   Out.temp = (Out.temp - 32)/1.8, 
-                  Out.depth = (Out.depth * 30.48))
+                  Out.depth = (Out.depth * 30.48),
+                  Out.flow = flow.out(Out.depth))
 #View(BRC.m)
 
 ## 9/5 Event
@@ -203,7 +239,9 @@ BRCsum <- BRCevents %>%
                                  meddeepT = median(Deep.temp, na.rm = TRUE), 
                                  maxdeepT = max(Deep.temp, na.rm = TRUE),
                                  medoutT = median(Out.temp, na.rm = TRUE), 
-                                 maxoutT = max(Out.temp, na.rm = TRUE))})
+                                 maxoutT = max(Out.temp, na.rm = TRUE),
+                                 Runoff.vol = runoff.in(Accumulation, CN = 88),
+                                 Out.flow.vol = sum((Out.flow * 120), na.rm = TRUE))})
 # View(BRCsum)
 
 ## Breaking events into pre and post 
@@ -543,11 +581,71 @@ ggplot()+
   scale_x_continuous(breaks = c(0:16)) +
   labs(x = "Duration (hrs)", y = "Temperature (°C)")
 
-
-
-
-
-
+# Hydrology analysis
+# Returns a data frame of values same length as list
+BRCflow.ana <- BRCsum %>%
+  mutate(frac.out = (Out.flow.vol/Runoff.vol) * 100,
+         perc.red = ((Runoff.vol - Out.flow.vol) / Runoff.vol) * 100)
+#View(BRCflow.ana)
+# summary
+BRCflow.anasumpre <- BRCflow.ana[-c(1:5),] %>%
+  subset(Date <= "2017/10/12" & Accumulation >= 1.7) %>%
+  summarise(med = median(perc.red),
+            min = min(perc.red),
+            max = max(perc.red),
+            sumout = sum(Out.flow.vol),
+            sumin = sum(Runoff.vol))
+#View(BRCflow.anasumpre)
+BRCflow.anasumpost <- BRCflow.ana %>%
+  subset(Date >= "2017/10/12" & Accumulation >= 1.7) %>%
+  summarise(med = median(perc.red),
+            min = min(perc.red),
+            max = max(perc.red),
+            sumout = sum(Out.flow.vol),
+            sumin = sum(Runoff.vol))
+#View(BRCflow.anasumpost)
+## Thermal load reduction
+## runoff volumes and outflow estimations
+## median event temperatures pre/post 1012
+thermal.pre <- (BRCsum) %>%
+  select(Date,
+         Accumulation,
+         Runoff.vol,
+         Out.flow.vol,
+         medinT,
+         medoutT) %>%
+  subset(Date <= "2017/10/12" & Accumulation >= 1.7) %>%
+  mutate(Runoff.therm = therm(Runoff.vol, medinT),
+         Out.flow.therm = therm(Out.flow.vol, medoutT),
+         therm.perc.red = (Runoff.therm - Out.flow.therm) / Runoff.therm)
+#View(thermal.pre)
+thermal.post <- (BRCsum) %>%
+  select(Date,
+         Accumulation,
+         Runoff.vol,
+         Out.flow.vol,
+         medinT,
+         medoutT) %>%
+  subset(Date >= "2017/10/12" & Accumulation >= 1.7) %>%
+  mutate(Runoff.therm = therm(Runoff.vol, medinT),
+         Out.flow.therm = therm(Out.flow.vol, medoutT),
+         therm.perc.red = (Runoff.therm - Out.flow.therm) / Runoff.therm)
+#View(thermal.post)
+# summary
+thermpre.sum <- thermal.pre %>%
+  summarise(med = median(therm.perc.red, na.rm = TRUE),
+            min = min(therm.perc.red, na.rm = TRUE),
+            max = max(therm.perc.red, na.rm = TRUE),
+            sumout = sum(Out.flow.therm, na.rm = TRUE),
+            sumin = sum(Runoff.therm, na.rm = TRUE))
+#View(thermpre.sum)
+thermpost.sum <- thermal.post %>%
+  summarise(med = median(therm.perc.red, na.rm = TRUE),
+            min = min(therm.perc.red, na.rm = TRUE),
+            max = max(therm.perc.red, na.rm = TRUE),
+            sumout = sum(Out.flow.therm, na.rm = TRUE),
+            sumin = sum(Runoff.therm, na.rm = TRUE))
+#View(thermpost.sum)
 
 
 
