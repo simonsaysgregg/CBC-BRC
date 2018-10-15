@@ -148,17 +148,24 @@ plot952 <- (plot952) %>%
 # View(plot952)
 # plot1
 plot1 <-ggplot(data = plot951)+
-  geom_line(aes(x = date.time, y = value, color = variable))+
+  geom_line(aes(x = date.time, y = value, color = variable, linetype = variable), size = 1)+
+  scale_colour_manual(values = brewer.pal(4, "Set1"), labels = c("Inlet", "Shallow Well", "Deep Well", "Outlet"))+
+  scale_linetype_manual(values = c(1,2,3,4), labels = c("Inlet", "Shallow Well", "Deep Well", "Outlet"))+
   labs(x = "Date", y = "Depth (cm)")+
   theme(legend.position = "bottom", 
-        legend.title = element_blank())+
+        legend.title = element_blank(),
+        text = element_text(size = 18))+
   scale_x_datetime(date_labels = "%m/%d", date_breaks = "1 days")
+
 # Plot2
 plot2 <-ggplot(data = plot952)+
-  geom_line(aes(x = date.time, y = value, color = variable))+
+  geom_line(aes(x = date.time, y = value, color = variable, linetype = variable), size = 1)+
+  scale_colour_manual(values = brewer.pal(5, "Set1"), labels = c("Air", "Inlet", "Shallow Well", "Deep Well", "Outlet"))+
+  scale_linetype_manual(values = c(1,2,3,4,5), labels = c("Air", "Inlet", "Shallow Well", "Deep Well", "Outlet"))+
   labs(x = "Date", y = "Temperature (°C)")+
   theme(legend.position = "bottom", 
-        legend.title = element_blank())+
+        legend.title = element_blank(), 
+        text = element_text(size = 18))+
   scale_x_datetime(date_labels = "%m/%d", date_breaks = "1 days")
 grid.newpage()
 grid.draw(rbind(ggplotGrob(plot1), ggplotGrob(plot2), size = "last"))
@@ -204,20 +211,30 @@ plot9112 <- (plot9112) %>%
 # View(plot9112)
 # plot3
 plot3 <-ggplot(data = plot9111)+
-  geom_line(aes(x = date.time, y = value, color = variable))+
+  geom_line(aes(x = date.time, y = value, color = variable, linetype = variable), size = 1)+
+  scale_colour_manual(values = brewer.pal(4, "Set1"), labels = c("Inlet", "Shallow Well", "Deep Well", "Outlet"))+
+  scale_linetype_manual(values = c(1,2,3,4), labels = c("Inlet", "Shallow Well", "Deep Well", "Outlet"))+
   labs(x = "Date", y = "Depth (cm)")+
   theme(legend.position = "bottom", 
-        legend.title = element_blank())+
+        legend.title = element_blank(),
+        text = element_text(size = 18))+
   scale_x_datetime(date_labels = "%m/%d", date_breaks = "1 days")
+
 # Plot4
 plot4 <-ggplot(data = plot9112)+
-  geom_line(aes(x = date.time, y = value, color = variable))+
+  geom_line(aes(x = date.time, y = value, color = variable, linetype = variable), size = 1)+
+  scale_colour_manual(values = brewer.pal(5, "Set1"), labels = c("Air", "Inlet", "Shallow Well", "Deep Well", "Outlet"))+
+  scale_linetype_manual(values = c(1,2,3,4,5), labels = c("Air", "Inlet", "Shallow Well", "Deep Well", "Outlet"))+
   labs(x = "Date", y = "Temperature (°C)")+
   theme(legend.position = "bottom", 
-        legend.title = element_blank())+
+        legend.title = element_blank(), 
+        text = element_text(size = 18))+
   scale_x_datetime(date_labels = "%m/%d", date_breaks = "1 days")
+
 grid.newpage()
 grid.draw(rbind(ggplotGrob(plot3), ggplotGrob(plot4), size = "last"))
+
+
 
 ## Additional statistical analysis
 ## Split into list of events
@@ -325,7 +342,8 @@ ggplot(data = BRCpre1012med_box)+
   scale_y_continuous(limits = c(10,30), expand = c(0,0)) +
   labs(x = "Temperature Location", y = "Temperature (°C)")+
   theme(legend.position = "bottom", 
-        legend.title = element_blank())
+        legend.title = element_blank(),
+        text = element_text(size =24))
 
 # plot max temps
 ggplot(data = BRCpre1012max_box)+
@@ -335,7 +353,8 @@ ggplot(data = BRCpre1012max_box)+
   scale_y_continuous(limits = c(10,30), expand = c(0,0)) +
   labs(x = "Temperature Location", y = "Temperature (°C)")+
   theme(legend.position = "bottom", 
-        legend.title = element_blank())
+        legend.title = element_blank(),
+        text = element_text(size =24))
 
 ## box plots of post-1012
 # median data
@@ -363,7 +382,8 @@ ggplot(data = BRCpost1012med_box)+
   scale_y_continuous(limits = c(10,30), expand = c(0,0)) +
   labs(x = "Temperature Location", y = "Temperature (°C)")+
   theme(legend.position = "bottom", 
-        legend.title = element_blank())
+        legend.title = element_blank(),
+        text = element_text(size =24))
 
 # plot max temps
 ggplot(data = BRCpost1012max_box)+
@@ -373,7 +393,8 @@ ggplot(data = BRCpost1012max_box)+
   scale_y_continuous(limits = c(10,30), expand = c(0,0)) +
   labs(x = "Temperature Location", y = "Temperature (°C)")+
   theme(legend.position = "bottom", 
-        legend.title = element_blank())
+        legend.title = element_blank(),
+        text = element_text(size =24))
 
 # Scatter plot of all medians and maximums
 tot.scat <- (BRCsum[-c(1),]) %>%
@@ -402,11 +423,12 @@ tot.scat <- (tot.scat) %>%
 # Plot
 ggplot(data = tot.scat, aes(x = Date))+
   geom_point(aes(y = value, shape = variable))+ 
-  geom_hline(aes(yintercept = 21, color = "Trout Threshold"))+
-  geom_vline(aes(xintercept = as.numeric(as.POSIXct("2017-10-12")), color = "Analysis Division"))+
+  geom_hline(aes(yintercept = 21, linetype = "Trout Threshold"))+
+  geom_vline(aes(xintercept = as.numeric(as.POSIXct("2017-10-12")), linetype = "Analysis Division"))+
   scale_shape_manual(values = c(0,1,15,16))+
   theme(legend.position = "bottom", 
-        legend.title = element_blank())+
+        legend.title = element_blank(),
+        tex = element_text(size = 18))+
   scale_y_continuous(limits = c(0,40), expand = c(0,0))+
   scale_x_datetime(date_labels = "%m/%d", date_breaks = "10 days")+
   labs(x = "Date", y = "Temperature (°C)")
@@ -451,7 +473,8 @@ ggplot(data = prob.plot)+
   geom_vline(aes(xintercept = 21, color = "Trout Threshold"))+
   scale_shape_manual(values = c(0,1,15,16))+
   theme(plot.title = element_text(hjust = 0.5))+
-  theme(legend.position = "bottom", legend.title = element_blank())+
+  theme(legend.position = "bottom", legend.title = element_blank(),
+        text = element_text(size = 18))+
   scale_y_continuous(limits = c(0.0,1.0), expand = c(0,0)) +
   scale_x_continuous(limits = c(10.0, 32.5), expand = c(0,0))+
   labs(x = "Temperature (°C)", y = "Probability")
@@ -576,7 +599,7 @@ ggplot()+
   geom_smooth(data = out.temp, aes(x = time.out, y = Out.temp, color = "Outlet"), method = loess, se = FALSE)+
   scale_shape_manual(values = c(1, 16))+
   theme(plot.title = element_text(hjust = 0.5))+
-  theme(legend.position = "bottom", legend.title = element_blank())+
+  theme(legend.position = "bottom", legend.title = element_blank(), text = element_text(size =18))+
   scale_y_continuous(limits = c(10,35), expand = c(0,0)) +
   scale_x_continuous(breaks = c(0:16)) +
   labs(x = "Duration (hrs)", y = "Temperature (°C)")
@@ -604,6 +627,7 @@ BRCflow.anasumpost <- BRCflow.ana %>%
             sumout = sum(Out.flow.vol),
             sumin = sum(Runoff.vol))
 #View(BRCflow.anasumpost)
+
 ## Thermal load reduction
 ## runoff volumes and outflow estimations
 ## median event temperatures pre/post 1012
