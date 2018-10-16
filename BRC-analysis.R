@@ -628,6 +628,18 @@ BRCflow.anasumpost <- BRCflow.ana %>%
             sumin = sum(Runoff.vol))
 #View(BRCflow.anasumpost)
 
+##Cummulative volume reduction
+# pre period 
+prepp <- BRCflow.anasumpre %>%
+  summarise(cum = ((sumin - sumout) / sumin) * 100)
+# View(prepp)
+# post period 
+postp <- BRCflow.anasumpost %>%
+  summarise(cum = ((sumin - sumout) / sumin) * 100)
+# View(postp)
+cumvolreduction <- (((BRCflow.anasumpre$sumin + BRCflow.anasumpost$sumin) - (BRCflow.anasumpre$sumout + BRCflow.anasumpost$sumout)) / (BRCflow.anasumpre$sumin + BRCflow.anasumpost$sumin)) * 100
+# cumvolreduction
+
 ## Thermal load reduction
 ## runoff volumes and outflow estimations
 ## median event temperatures pre/post 1012
@@ -661,17 +673,20 @@ thermpre.sum <- thermal.pre %>%
             min = min(therm.perc.red, na.rm = TRUE),
             max = max(therm.perc.red, na.rm = TRUE),
             sumout = sum(Out.flow.therm, na.rm = TRUE),
-            sumin = sum(Runoff.therm, na.rm = TRUE))
+            sumin = sum(Runoff.therm, na.rm = TRUE),
+            cum = (sumin - sumout) / sumin)
 #View(thermpre.sum)
 thermpost.sum <- thermal.post %>%
   summarise(med = median(therm.perc.red, na.rm = TRUE),
             min = min(therm.perc.red, na.rm = TRUE),
             max = max(therm.perc.red, na.rm = TRUE),
             sumout = sum(Out.flow.therm, na.rm = TRUE),
-            sumin = sum(Runoff.therm, na.rm = TRUE))
+            sumin = sum(Runoff.therm, na.rm = TRUE),
+            cum = (sumin - sumout) / sumin)
 #View(thermpost.sum)
-
-
+## cummulative load
+cumthermred <- (((thermpre.sum$sumin + thermpost.sum$sumin) - (thermpre.sum$sumout + thermpost.sum$sumout)) / (thermpre.sum$sumin + thermpost.sum$sumin)) * 100
+# cumthermred
 
 
 
