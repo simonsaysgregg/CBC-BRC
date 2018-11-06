@@ -735,6 +735,9 @@ BRC.tempdur2 <- (BRC.tempdur2) %>%
   mutate(cumdur = cumsum(time))
 ## View(BRC.tempdur2)
 
+# Write data to file
+write.csv(BRC.tempdur2, file = "./Working/BRC.temp.duration")
+
 ## Plot Brittain Creek Temperature-Durations
 ggplot()+
   geom_point(data = BRC.tempdur2, aes(x = cumdur, y = Temp, shape = "BRC Outflow Temperature"))+ 
