@@ -688,5 +688,62 @@ thermpost.sum <- thermal.post %>%
 cumthermred <- (((thermpre.sum$sumin + thermpost.sum$sumin) - (thermpre.sum$sumout + thermpost.sum$sumout)) / (thermpre.sum$sumin + thermpost.sum$sumin)) * 100
 # cumthermred
 
+## Temp-duration plot to add to Brittain Creek Temp-Dur plot
+## Create temperature-duration plot
+## Entire monitoring period 
+## excluding data collection times
+## Use BRC Outlet temp
+## Select temperature variable: sort, rank, & round
+BRC.tempdur <- (BRC.m) %>%
+  select(date.time,
+         Out.temp,
+         Out.flow) %>%
+  subset(Out.flow > 0) %>%
+  mutate(Temp = sort(Out.temp, decreasing = TRUE, na.last = TRUE),
+         T.rank = rank(desc(Temp)),
+         Temp = signif(Temp, digits = 2))
+## View(BRC.tempdur)
+
+## Add counter to data fram for in temp obersvations 
+## grouped_by temperature
+BRC.tempdur <- BRC.tempdur %>%
+  group_by(Temp) %>%
+  mutate(count = length(Temp))
+## View(BRC.tempdur)
+
+## Calculate duration (at temperature hrs) of temp observations
+## 1 observation = 2-min duration
+BRC.tempdur <- BRC.tempdur %>%
+  group_by(count) %>%
+  mutate(time = mean(count)*2/60,  ## Conversion to hours
+         time = signif(time, digits = 3))
+## View(BRC.tempdur)
+
+## Select temp and duration variables
+BRC.tempdur1 <- (BRC.tempdur) %>%
+  ungroup() %>%
+  select("Temp", "time")
+#View(BRC.tempdur1)
+
+## Gather distict observations
+## Should result in a single value per temperature
+BRC.tempdur2 <- distinct(BRC.tempdur1)
+#View(BRC.tempdur2)
+
+## Sum time to create cummulative duration exceedance of observation temperature
+BRC.tempdur2 <- (BRC.tempdur2) %>%
+  mutate(cumdur = cumsum(time))
+## View(BRC.tempdur2)
+
+## Plot Brittain Creek Temperature-Durations
+ggplot()+
+  geom_point(data = BRC.tempdur2, aes(x = cumdur, y = Temp, shape = "BRC Outflow Temperature"))+ 
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(legend.position = "bottom", 
+        legend.title = element_blank())+
+  scale_y_continuous(limits = c(5,35), 
+                     expand = c(0,0)) +
+  labs(x = "Duration (hrs)", y = "Temperature (°C)")
+
 
 
