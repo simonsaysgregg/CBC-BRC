@@ -736,7 +736,7 @@ BRC.tempdur2 <- (BRC.tempdur2) %>%
 ## View(BRC.tempdur2)
 
 # Write data to file
-write.csv(BRC.tempdur2, file = "./Working/BRC.temp.duration")
+write.csv(BRC.tempdur2, file = "./Working/BRC.temp.duration.csv")
 
 ## Plot Brittain Creek Temperature-Durations
 ggplot()+
