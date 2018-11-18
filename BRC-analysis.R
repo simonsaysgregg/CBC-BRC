@@ -142,7 +142,7 @@ plot953 <- (BRC.m) %>%
   select(date.time,
          rainfall)
 colnames(plot953) <- c("date.time",
-                        "Rainfall")
+                       "Rainfall")
 # Prep plotting dataset1
 plot951 <- (plot951) %>%
   subset(date.time >= as.POSIXct("2017-09-05 00:00:00") & date.time <= as.POSIXct("2017-09-10 00:00:00")) %>%
@@ -205,10 +205,10 @@ plot9111 <- (BRC.m) %>%
          Deep.depth,
          Out.depth) 
 colnames(plot9111) <- c("date.time",
-                       "Inlet",
-                       "Shallow Well",
-                       "Deep Well",
-                       "Outlet")
+                        "Inlet",
+                        "Shallow Well",
+                        "Deep Well",
+                        "Outlet")
 # Plot2
 plot9112 <- (BRC.m) %>%
   select(date.time,
@@ -218,17 +218,17 @@ plot9112 <- (BRC.m) %>%
          Deep.temp,
          Out.temp) 
 colnames(plot9112) <- c("date.time",
-                       "Air",
-                       "Inlet",
-                       "Shallow Well",
-                       "Deep Well",
-                       "Outlet")
+                        "Air",
+                        "Inlet",
+                        "Shallow Well",
+                        "Deep Well",
+                        "Outlet")
 # Plot 3
 plot9113 <- (BRC.m) %>%
   select(date.time,
          rainfall)
 colnames(plot9113) <- c("date.time",
-                       "Rainfall")
+                        "Rainfall")
 # Prep plotting dataset1
 plot9111 <- (plot9111) %>%
   subset(date.time >= as.POSIXct("2017-09-11 00:00:00") & date.time <= as.POSIXct("2017-09-19 00:00:00")) %>%
@@ -280,6 +280,8 @@ gB <- ggplotGrob(plot1)
 gC <- ggplotGrob(plot2)
 grid::grid.newpage()
 plot_grid(gA, gB, gC, rel_heights = c(1.2,2.2,2.2), ncol = 1, align = "v")
+
+
 
 ## Additional statistical analysis
 ## Split into list of events
@@ -387,7 +389,8 @@ ggplot(data = BRCpre1012med_box)+
   scale_y_continuous(limits = c(10,30), expand = c(0,0)) +
   labs(x = "Temperature Location", y = "Temperature (°C)")+
   theme(legend.position = "bottom", 
-        legend.title = element_blank())
+        legend.title = element_blank(),
+        text = element_text(size =24))
 
 # plot max temps
 ggplot(data = BRCpre1012max_box)+
@@ -397,7 +400,8 @@ ggplot(data = BRCpre1012max_box)+
   scale_y_continuous(limits = c(10,30), expand = c(0,0)) +
   labs(x = "Temperature Location", y = "Temperature (°C)")+
   theme(legend.position = "bottom", 
-        legend.title = element_blank())
+        legend.title = element_blank(),
+        text = element_text(size =24))
 
 ## box plots of post-1012
 # median data
@@ -425,7 +429,8 @@ ggplot(data = BRCpost1012med_box)+
   scale_y_continuous(limits = c(10,30), expand = c(0,0)) +
   labs(x = "Temperature Location", y = "Temperature (°C)")+
   theme(legend.position = "bottom", 
-        legend.title = element_blank())
+        legend.title = element_blank(),
+        text = element_text(size =24))
 
 # plot max temps
 ggplot(data = BRCpost1012max_box)+
@@ -435,7 +440,8 @@ ggplot(data = BRCpost1012max_box)+
   scale_y_continuous(limits = c(10,30), expand = c(0,0)) +
   labs(x = "Temperature Location", y = "Temperature (°C)")+
   theme(legend.position = "bottom", 
-        legend.title = element_blank())
+        legend.title = element_blank(),
+        text = element_text(size =24))
 
 # Scatter plot of all medians and maximums
 tot.scat <- (BRCsum[-c(1),]) %>%
@@ -464,11 +470,12 @@ tot.scat <- (tot.scat) %>%
 # Plot
 ggplot(data = tot.scat, aes(x = Date))+
   geom_point(aes(y = value, shape = variable))+ 
-  geom_hline(aes(yintercept = 21, color = "Trout Threshold"))+
-  geom_vline(aes(xintercept = as.numeric(as.POSIXct("2017-10-12")), color = "Analysis Division"))+
+  geom_hline(aes(yintercept = 21, linetype = "Trout Threshold"))+
+  geom_vline(aes(xintercept = as.numeric(as.POSIXct("2017-10-12")), linetype = "Analysis Division"))+
   scale_shape_manual(values = c(0,1,15,16))+
   theme(legend.position = "bottom", 
-        legend.title = element_blank())+
+        legend.title = element_blank(),
+        tex = element_text(size = 18))+
   scale_y_continuous(limits = c(0,40), expand = c(0,0))+
   scale_x_datetime(date_labels = "%m/%d", date_breaks = "10 days")+
   labs(x = "Date", y = "Temperature (°C)")
@@ -513,7 +520,8 @@ ggplot(data = prob.plot)+
   geom_vline(aes(xintercept = 21, color = "Trout Threshold"))+
   scale_shape_manual(values = c(0,1,15,16))+
   theme(plot.title = element_text(hjust = 0.5))+
-  theme(legend.position = "bottom", legend.title = element_blank())+
+  theme(legend.position = "bottom", legend.title = element_blank(),
+        text = element_text(size = 18))+
   scale_y_continuous(limits = c(0.0,1.0), expand = c(0,0)) +
   scale_x_continuous(limits = c(10.0, 32.5), expand = c(0,0))+
   labs(x = "Temperature (°C)", y = "Probability")
@@ -638,7 +646,7 @@ ggplot()+
   geom_smooth(data = out.temp, aes(x = time.out, y = Out.temp, color = "Outlet"), method = loess, se = FALSE)+
   scale_shape_manual(values = c(1, 16))+
   theme(plot.title = element_text(hjust = 0.5))+
-  theme(legend.position = "bottom", legend.title = element_blank())+
+  theme(legend.position = "bottom", legend.title = element_blank(), text = element_text(size =18))+
   scale_y_continuous(limits = c(10,35), expand = c(0,0)) +
   scale_x_continuous(breaks = c(0:16)) +
   labs(x = "Duration (hrs)", y = "Temperature (°C)")
@@ -666,6 +674,19 @@ BRCflow.anasumpost <- BRCflow.ana %>%
             sumout = sum(Out.flow.vol),
             sumin = sum(Runoff.vol))
 #View(BRCflow.anasumpost)
+
+##Cummulative volume reduction
+# pre period 
+prepp <- BRCflow.anasumpre %>%
+  summarise(cum = ((sumin - sumout) / sumin) * 100)
+# View(prepp)
+# post period 
+postp <- BRCflow.anasumpost %>%
+  summarise(cum = ((sumin - sumout) / sumin) * 100)
+# View(postp)
+cumvolreduction <- (((BRCflow.anasumpre$sumin + BRCflow.anasumpost$sumin) - (BRCflow.anasumpre$sumout + BRCflow.anasumpost$sumout)) / (BRCflow.anasumpre$sumin + BRCflow.anasumpost$sumin)) * 100
+# cumvolreduction
+
 ## Thermal load reduction
 ## runoff volumes and outflow estimations
 ## median event temperatures pre/post 1012
@@ -699,17 +720,80 @@ thermpre.sum <- thermal.pre %>%
             min = min(therm.perc.red, na.rm = TRUE),
             max = max(therm.perc.red, na.rm = TRUE),
             sumout = sum(Out.flow.therm, na.rm = TRUE),
-            sumin = sum(Runoff.therm, na.rm = TRUE))
+            sumin = sum(Runoff.therm, na.rm = TRUE),
+            cum = (sumin - sumout) / sumin)
 #View(thermpre.sum)
 thermpost.sum <- thermal.post %>%
   summarise(med = median(therm.perc.red, na.rm = TRUE),
             min = min(therm.perc.red, na.rm = TRUE),
             max = max(therm.perc.red, na.rm = TRUE),
             sumout = sum(Out.flow.therm, na.rm = TRUE),
-            sumin = sum(Runoff.therm, na.rm = TRUE))
+            sumin = sum(Runoff.therm, na.rm = TRUE),
+            cum = (sumin - sumout) / sumin)
 #View(thermpost.sum)
+## cummulative load
+cumthermred <- (((thermpre.sum$sumin + thermpost.sum$sumin) - (thermpre.sum$sumout + thermpost.sum$sumout)) / (thermpre.sum$sumin + thermpost.sum$sumin)) * 100
+# cumthermred
 
+## Temp-duration plot to add to Brittain Creek Temp-Dur plot
+## Create temperature-duration plot
+## Entire monitoring period 
+## excluding data collection times
+## Use BRC Outlet temp
+## Select temperature variable: sort, rank, & round
+BRC.tempdur <- (BRC.m) %>%
+  select(date.time,
+         Out.temp,
+         Out.flow) %>%
+  subset(Out.flow > 0) %>%
+  mutate(Temp = sort(Out.temp, decreasing = TRUE, na.last = TRUE),
+         T.rank = rank(desc(Temp)),
+         Temp = signif(Temp, digits = 2))
+## View(BRC.tempdur)
 
+## Add counter to data fram for in temp obersvations 
+## grouped_by temperature
+BRC.tempdur <- BRC.tempdur %>%
+  group_by(Temp) %>%
+  mutate(count = length(Temp))
+## View(BRC.tempdur)
+
+## Calculate duration (at temperature hrs) of temp observations
+## 1 observation = 2-min duration
+BRC.tempdur <- BRC.tempdur %>%
+  group_by(count) %>%
+  mutate(time = mean(count)*2/60,  ## Conversion to hours
+         time = signif(time, digits = 3))
+## View(BRC.tempdur)
+
+## Select temp and duration variables
+BRC.tempdur1 <- (BRC.tempdur) %>%
+  ungroup() %>%
+  select("Temp", "time")
+#View(BRC.tempdur1)
+
+## Gather distict observations
+## Should result in a single value per temperature
+BRC.tempdur2 <- distinct(BRC.tempdur1)
+#View(BRC.tempdur2)
+
+## Sum time to create cummulative duration exceedance of observation temperature
+BRC.tempdur2 <- (BRC.tempdur2) %>%
+  mutate(cumdur = cumsum(time))
+## View(BRC.tempdur2)
+
+# Write data to file
+write.csv(BRC.tempdur2, file = "./Working/BRC.temp.duration.csv")
+
+## Plot Brittain Creek Temperature-Durations
+ggplot()+
+  geom_point(data = BRC.tempdur2, aes(x = cumdur, y = Temp, shape = "BRC Outflow Temperature"))+ 
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(legend.position = "bottom", 
+        legend.title = element_blank())+
+  scale_y_continuous(limits = c(5,35), 
+                     expand = c(0,0)) +
+  labs(x = "Duration (hrs)", y = "Temperature (°C)")
 
 
 
