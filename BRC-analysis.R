@@ -9,6 +9,7 @@ require("scales")       #
 require("RColorBrewer") # creates nice color schemes
 require("corrplot")     # A graphical display of a correlation matrix between all combinations of variables
 require("grid")
+require("cowplot")
 ## Statistical analysis
 require("stats")        # Lots of stats stuff
 ## Data management
@@ -136,6 +137,12 @@ colnames(plot952) <- c("date.time",
                        "Shallow Well",
                        "Deep Well",
                        "Outlet")
+# Plot 3
+plot953 <- (BRC.m) %>%
+  select(date.time,
+         rainfall)
+colnames(plot953) <- c("date.time",
+                        "Rainfall")
 # Prep plotting dataset1
 plot951 <- (plot951) %>%
   subset(date.time >= as.POSIXct("2017-09-05 00:00:00") & date.time <= as.POSIXct("2017-09-10 00:00:00")) %>%
@@ -146,23 +153,47 @@ plot952 <- (plot952) %>%
   subset(date.time >= as.POSIXct("2017-09-05 00:00:00") & date.time <= as.POSIXct("2017-09-10 00:00:00")) %>%
   melt(id = "date.time")
 # View(plot952)
+# Prep plotting dataset3
+plot953 <- (plot953) %>%
+  subset(date.time >= as.POSIXct("2017-09-05 00:00:00") & date.time <= as.POSIXct("2017-09-10 00:00:00")) %>%
+  melt(id = "date.time")
+# View(plot953)
 # plot1
 plot1 <-ggplot(data = plot951)+
   geom_line(aes(x = date.time, y = value, color = variable))+
   labs(x = "Date", y = "Depth (cm)")+
+  theme_grey()+
   theme(legend.position = "bottom", 
-        legend.title = element_blank())+
+        legend.title = element_blank(),
+        text = element_text(size = 18))+
   scale_x_datetime(date_labels = "%m/%d", date_breaks = "1 days")
 # Plot2
 plot2 <-ggplot(data = plot952)+
   geom_line(aes(x = date.time, y = value, color = variable))+
   labs(x = "Date", y = "Temperature (°C)")+
+  theme_grey()+
   theme(legend.position = "bottom", 
-        legend.title = element_blank())+
+        legend.title = element_blank(),
+        text = element_text(size = 18))+
   scale_x_datetime(date_labels = "%m/%d", date_breaks = "1 days")
-grid.newpage()
-grid.draw(rbind(ggplotGrob(plot1), ggplotGrob(plot2), size = "last"))
-
+# Plot 3
+plot3 <- ggplot(data = plot953)+
+  geom_bar(aes(x = date.time, y = value, color = variable, linetype = variable), stat = "identity", size = 1)+
+  labs(y = "Rainfall (mm/hr)", x = "Date")+
+  scale_y_reverse()+
+  theme_grey()+
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5),
+        text = element_text(size = 18),
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        legend.text = element_blank())
+gA <- ggplotGrob(plot3)
+gB <- ggplotGrob(plot1)
+gC <- ggplotGrob(plot2)
+grid::grid.newpage()
+plot_grid(gA, gB, gC, rel_heights = c(1.2,2.2,2.2), ncol = 1, align = "v")
 
 ## 9/11 Event
 ## Plot depth and rainfall
@@ -192,6 +223,12 @@ colnames(plot9112) <- c("date.time",
                        "Shallow Well",
                        "Deep Well",
                        "Outlet")
+# Plot 3
+plot9113 <- (BRC.m) %>%
+  select(date.time,
+         rainfall)
+colnames(plot9113) <- c("date.time",
+                       "Rainfall")
 # Prep plotting dataset1
 plot9111 <- (plot9111) %>%
   subset(date.time >= as.POSIXct("2017-09-11 00:00:00") & date.time <= as.POSIXct("2017-09-19 00:00:00")) %>%
@@ -202,22 +239,47 @@ plot9112 <- (plot9112) %>%
   subset(date.time >= as.POSIXct("2017-09-11 00:00:00") & date.time <= as.POSIXct("2017-09-19 00:00:00")) %>%
   melt(id = "date.time")
 # View(plot9112)
-# plot3
-plot3 <-ggplot(data = plot9111)+
+# Prep plotting dataset3
+plot9113 <- (plot9113) %>%
+  subset(date.time >= as.POSIXct("2017-09-11 00:00:00") & date.time <= as.POSIXct("2017-09-19 00:00:00")) %>%
+  melt(id = "date.time")
+# View(plot9113)
+# plot1
+plot1 <-ggplot(data = plot9111)+
   geom_line(aes(x = date.time, y = value, color = variable))+
   labs(x = "Date", y = "Depth (cm)")+
+  theme_grey()+
   theme(legend.position = "bottom", 
-        legend.title = element_blank())+
+        legend.title = element_blank(),
+        text = element_text(size = 18))+
   scale_x_datetime(date_labels = "%m/%d", date_breaks = "1 days")
-# Plot4
-plot4 <-ggplot(data = plot9112)+
+# Plot2
+plot2 <-ggplot(data = plot9112)+
   geom_line(aes(x = date.time, y = value, color = variable))+
   labs(x = "Date", y = "Temperature (°C)")+
+  theme_grey()+
   theme(legend.position = "bottom", 
-        legend.title = element_blank())+
+        legend.title = element_blank(),
+        text = element_text(size = 18))+
   scale_x_datetime(date_labels = "%m/%d", date_breaks = "1 days")
-grid.newpage()
-grid.draw(rbind(ggplotGrob(plot3), ggplotGrob(plot4), size = "last"))
+# Plot 3
+plot3 <- ggplot(data = plot9113)+
+  geom_bar(aes(x = date.time, y = value, color = variable, linetype = variable), stat = "identity", size = 1)+
+  labs(y = "Rainfall (mm)", x = "Date")+
+  scale_y_reverse()+
+  theme_grey()+
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5),
+        text = element_text(size = 18),
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        legend.text = element_blank())
+gA <- ggplotGrob(plot3)
+gB <- ggplotGrob(plot1)
+gC <- ggplotGrob(plot2)
+grid::grid.newpage()
+plot_grid(gA, gB, gC, rel_heights = c(1.2,2.2,2.2), ncol = 1, align = "v")
 
 ## Additional statistical analysis
 ## Split into list of events
