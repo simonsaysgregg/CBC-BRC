@@ -160,7 +160,7 @@ plot953 <- (plot953) %>%
 # View(plot953)
 # plot1
 plot1 <-ggplot(data = plot951)+
-  geom_line(aes(x = date.time, y = value, color = variable))+
+  geom_line(aes(x = date.time, y = value, color = variable, linetype = variable))+
   labs(x = "Date", y = "Depth (cm)")+
   theme_grey()+
   theme(legend.position = "bottom", 
@@ -169,7 +169,7 @@ plot1 <-ggplot(data = plot951)+
   scale_x_datetime(date_labels = "%m/%d", date_breaks = "1 days")
 # Plot2
 plot2 <-ggplot(data = plot952)+
-  geom_line(aes(x = date.time, y = value, color = variable))+
+  geom_line(aes(x = date.time, y = value, color = variable, linetype = variable))+
   labs(x = "Date", y = "Temperature (°C)")+
   theme_grey()+
   theme(legend.position = "bottom", 
@@ -246,7 +246,7 @@ plot9113 <- (plot9113) %>%
 # View(plot9113)
 # plot1
 plot1 <-ggplot(data = plot9111)+
-  geom_line(aes(x = date.time, y = value, color = variable))+
+  geom_line(aes(x = date.time, y = value, color = variable, linetype = variable))+
   labs(x = "Date", y = "Depth (cm)")+
   theme_grey()+
   theme(legend.position = "bottom", 
@@ -255,7 +255,7 @@ plot1 <-ggplot(data = plot9111)+
   scale_x_datetime(date_labels = "%m/%d", date_breaks = "1 days")
 # Plot2
 plot2 <-ggplot(data = plot9112)+
-  geom_line(aes(x = date.time, y = value, color = variable))+
+  geom_line(aes(x = date.time, y = value, color = variable, linetype = variable))+
   labs(x = "Date", y = "Temperature (°C)")+
   theme_grey()+
   theme(legend.position = "bottom", 
